@@ -1,0 +1,13 @@
+package com.rsfbernardes.metricslab;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MetricsLabApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MetricsLabApplication.class, args);
+    }
+
+}
