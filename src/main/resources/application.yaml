@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: metrics-lab
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
