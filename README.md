@@ -53,7 +53,7 @@ This behavior is intentional and aligned with production security best practices
 
 ---
 
-### Actuator root — default behavior
+### Step 3 - Actuator root — default behavior
 
 GET /actuator
 
@@ -169,3 +169,110 @@ Planned improvements for this project include:
 - Creating custom application-level metrics
 
 Each step will be documented with configuration, validation, and learnings.
+
+---
+
+## 📊 Step 4 – Custom application metrics
+
+In this step, a **custom application-level metric** was implemented to deepen the
+understanding of how Micrometer works beyond Spring Boot’s autoconfigured metrics.
+
+While JVM and HTTP metrics are provided out of the box, real observability requires
+metrics that represent **explicit application behavior**. This step focuses on
+creating, registering, and validating such a metric.
+
+---
+
+### 🎯 Objectives
+
+- Define a custom Micrometer metric
+- Register the metric using Spring Boot’s autoconfigured infrastructure
+- Increment the metric from application code
+- Validate the metric through Spring Boot Actuator
+- Clarify the responsibilities of Micrometer vs Actuator
+
+---
+
+### 🛠 Implementation overview
+
+A custom **Micrometer Counter** was created and registered explicitly using the
+autoconfigured `MeterRegistry`. The metric is initialized once during application
+startup and incremented every time a specific endpoint is called.
+
+#### Metric definition
+
+- **Name:** `app.hello.requests`
+- **Type:** Counter
+- **Description:** Number of requests handled by the `/hello` endpoint
+- **Tags:**
+  - `endpoint=hello`
+
+This naming and tagging strategy follows Micrometer best practices and prepares the
+metric for future aggregation and visualization.
+
+---
+
+### 🌐 Metric usage
+
+A simple REST endpoint was created to represent application behavior and force
+metric incrementation:
+
+GET /hello
+
+![Hello Endpoint](images/step-04-custom-metrics/hello-request.png)
+
+Each request to this endpoint increments the `app.hello.requests` counter, allowing
+the metric to reflect real application traffic.
+
+---
+
+### 🔍 Validation via Actuator
+
+The custom metric can be discovered and inspected using Spring Boot Actuator.
+
+- List all available metrics:
+
+GET /actuator/metrics
+
+![Metrics List in Actuator](images/step-04-custom-metrics/metrics-with-custom-metric.png)
+
+- Inspect the custom metric in detail:
+
+GET /actuator/metrics/app.hello.requests
+
+![Custom Metric in Actuator](images/step-04-custom-metrics/app-hello-requests.png)
+
+
+The response confirms that:
+
+- The metric is correctly registered
+- The counter value increases with each request
+- Tags and measurements are exposed as expected
+
+This validates that the metric lifecycle — registration, incrementation, and
+exposure — is functioning correctly.
+
+---
+
+### 🧠 Key learnings
+
+- Micrometer metrics are **defined in code**, not configuration
+- A metric only exists after being registered in a `MeterRegistry`
+- Spring Boot autoconfigures the `MeterRegistry`, making it directly injectable
+- Actuator’s responsibility is **exposing metrics**, not creating them
+- Custom metrics are independent of Prometheus or Grafana
+- Metric naming and tagging decisions are foundational for effective observability
+
+---
+
+### 🚧 Next steps
+
+The next steps focus on **exporting and visualizing** these metrics:
+
+- Add the Micrometer Prometheus registry
+- Expose the `/actuator/prometheus` endpoint
+- Run Prometheus and Grafana using Docker
+- Visualize both built-in and custom metrics in Grafana dashboards
+
+Each step will be documented with configuration details, validation steps, and
+key learnings.
