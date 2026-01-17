@@ -309,11 +309,145 @@ autoconfigured metrics, confirming correct registry integration.
 
 ---
 
-## 📝 Commit conventions
+### 📝 Commit conventions
 
 Early commits in this repository reflect an exploratory learning phase.
 
 From **Step 4 onward**, this project follows the
 [Conventional Commits](https://www.conventionalcommits.org/) specification
 to keep commit history consistent and portfolio-ready.
+
+---
+
+### 📡 Step 6 – Running Prometheus with Docker & scraping the application
+
+In this step, Prometheus itself was finally introduced into the architecture.
+Until now, metrics were only exposed by the application. Here, they start
+being actively collected by an external system.
+
+This step focuses on understanding:
+- how Prometheus runs
+- how it discovers targets
+- how scraping actually works over time
+
+---
+
+### 🐳 Prometheus with Docker
+
+Prometheus was executed using Docker, keeping the local environment isolated
+and reproducible.
+
+A custom prometheus.yml configuration file was created and mounted into the
+container. This file defines what Prometheus scrapes and how often.
+
+---
+
+### ⚙️ Prometheus configuration (`prometheus.yml`)
+
+Key configuration elements:
+
+```
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "metrics-lab"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets:
+          - host.docker.internal:8080
+```
+
+Explanation:
+- `scrape_interval`: how often Prometheus pulls metrics from the target
+- `job_name`: logical grouping for the scraped application
+- `metrics_path`: Actuator Prometheus endpoint
+- `targets`: application address accessible from the Docker container
+
+This configuration tells Prometheus to **pull metrics every 15 seconds** from
+the Spring Boot application.
+
+---
+
+### 🎯 Target validation
+
+![Prometheus targets](images/step-06-prometheus-with-docker/prometheus-targets-up.png)
+
+After starting Prometheus, the application appeared in the `Targets` page:
+- Target status: **UP**
+- Last scrape: successful
+- No scrape errors
+
+This confirms that:
+- networking between Docker and the host is correct
+- the `/actuator/prometheus` endpoint is reachable
+- metrics are being collected successfully
+
+---
+
+### 🔍 Prometheus UI & PromQL basics
+
+![PromQL query example](images/step-06-prometheus-with-docker/promql-query.png)
+
+Using the Prometheus UI, metrics were queried using `PromQL`.
+
+Important clarification discovered in this step:
+
+Prometheus does **not** update metrics when a query is executed.
+
+Instead:
+- Metrics are collected only during scrapes
+- PromQL queries simply read stored time-series data
+- Re-executing a query only refreshes the visualization
+
+---
+
+### ⏱ Understanding metric frequency
+
+Metric values increase because:
+- Prometheus scrapes the application at fixed intervals
+- Each scrape stores a new data point
+- Counters increase only when the application performs work (e.g. HTTP requests)
+
+If no requests happen between scrapes:
+- The metric value remains unchanged
+- Prometheus still stores repeated samples with the same value
+
+This explains why metrics don’t “auto-update” on screen without re-running the query.
+
+---
+
+🧠 Key learnings
+
+Prometheus uses a pull model, not push
+
+Scraping is time-based, independent of user interaction
+
+PromQL queries do not trigger metric updates
+
+Metrics are stored as time-series, not single values
+
+Counters represent accumulated events over time
+
+Understanding scraping is essential before using rate() or Grafana
+
+### 🚧 Next steps
+
+With metrics now being scraped and stored, the foundation is ready for
+visualization.
+
+Upcoming steps:
+- Introduce **Grafana**
+- Connect Grafana to Prometheus
+- Create dashboards for:
+  - JVM metrics
+  - HTTP metrics
+  - Custom application metrics
+
+Use `rate()` and `increase()` correctly
+
+At this point, the project transitions from `observability plumbing
+to real observability insights` 📊🚀
+
+---
 
