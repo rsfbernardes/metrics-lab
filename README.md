@@ -276,3 +276,44 @@ The next steps focus on **exporting and visualizing** these metrics:
 
 Each step will be documented with configuration details, validation steps, and
 key learnings.
+
+## 📈 Prometheus metrics exposure
+
+The Prometheus Micrometer registry was added to enable metric export in
+Prometheus-compatible format.
+
+### Endpoint
+
+```
+GET /actuator/prometheus
+```
+
+![Prometheus Endpoint](images/step-05-prometheus/actuator-prometheus.png)
+
+
+This endpoint exposes all application, JVM, and **custom metrics** using the
+Prometheus exposition format.
+
+**Custom** application metrics created earlier are visible alongside
+autoconfigured metrics, confirming correct registry integration.
+
+---
+
+### 🚧 **What’s next** (Step 6 preview)
+
+- Next step, we’ll finally bring **Prometheus** itself into the picture:
+- Run Prometheus using **Docker**
+- Configure `prometheus.yml`
+- Scrape your application
+- Verify targets and metrics
+
+---
+
+## 📝 Commit conventions
+
+Early commits in this repository reflect an exploratory learning phase.
+
+From **Step 4 onward**, this project follows the
+[Conventional Commits](https://www.conventionalcommits.org/) specification
+to keep commit history consistent and portfolio-ready.
+
