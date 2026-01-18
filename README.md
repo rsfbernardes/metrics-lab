@@ -451,3 +451,117 @@ to real observability insights` 📊🚀
 
 ---
 
+## 📊 Step 7 – Visualizing metrics and alerts with Grafana
+
+In this step, **Grafana** was introduced as the visualization and alerting layer
+of the observability stack.
+
+At this point in the project:
+
+- the application creates metrics (**Micrometer**)
+- Spring Boot exposes metrics (**Actuator**)
+- Prometheus scrapes and stores metrics
+- Grafana turns metrics into insights
+
+This step focuses on consuming time-series data and transforming it into
+dashboards and alerts that reflect **real application behavior**.
+
+---
+
+### 🔗 Grafana and Prometheus integration
+
+Grafana was run using Docker and connected to Prometheus as a data source.
+
+Rather than documenting UI navigation, the key concept validated here is:
+
+> Grafana does **not** collect metrics — it queries Prometheus, which already
+> stores the time-series data.
+
+Once connected, all scraped metrics — including custom application metrics —
+became available for visualization.
+
+---
+
+### 📈 Visualizing custom application metrics
+
+The custom counter created earlier (`app_hello_requests_total`) was used as the
+primary signal for this step.
+
+This metric represents real application behavior:
+
+- it increases only when the `/hello` endpoint is called
+- it is scraped periodically by Prometheus
+- it is visualized by Grafana over time
+
+#### Dashboard example
+
+![Grafana dashboard – custom counter](images/step-07-grafana/dashboard-app-hello-requests.png)
+
+This dashboard confirms:
+
+- the metric is flowing end-to-end (application → Prometheus → Grafana)
+- counters appear as **monotonically increasing** time-series
+- visualization reflects **scrape intervals**, not user interaction
+
+---
+
+### ⏱ Counters, time, and interpretation
+
+An important realization reinforced in this step:
+
+- Grafana does **not** make metrics increase
+- Prometheus does **not** update metrics on query
+- Metrics change only when:
+  - the application performs work
+  - Prometheus scrapes new samples
+
+Grafana simply renders **stored time-series data**.
+
+Understanding this distinction is critical before using functions like
+`rate()` or `increase()`.
+
+---
+
+### 🚨 Alerting on application behavior
+
+An alert rule was created based on the custom counter to demonstrate how
+metrics evolve from observability data into **operational signals**.
+
+#### Alert example
+
+![Grafana alert – custom metric](images/step-07-grafana/alert-app-hello-requests.png)
+
+This validates that:
+
+- application-level metrics can drive alerts
+- alerts are evaluated against **Prometheus data**
+- Grafana acts as a **decision layer**, not a metric source
+
+---
+
+### 🧠 Key learnings
+
+- Grafana is a **consumer**, not a producer, of metrics
+- Prometheus remains the **single source of truth** for time-series data
+- Dashboards visualize historical samples, not live execution
+- Counters represent accumulated events, not instantaneous values
+- Alerts are built on **metric semantics**, not UI thresholds
+- Observability emerges from the combination of all layers, not a single tool
+
+---
+
+### 🚧 What this unlocks next
+
+With dashboards and alerts in place, the observability pipeline is complete.
+
+Future improvements may include:
+
+- using `rate()` and `increase()` for request throughput
+- histogram and latency visualizations
+- alert tuning and multidimensional thresholds
+- dashboard refinement for JVM and HTTP metrics
+
+At this stage, the project moves from **instrumentation** to
+**interpreting system behavior through data** 📊🚀
+
+---

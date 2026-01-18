@@ -10,3 +10,11 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+        - "3000:3000"
+    depends_on:
+      - prometheus
